@@ -1,0 +1,23 @@
+docker-compose-yaml: docker-compose.yml
+
+project: laragoon
+endpoint: api-lagoon-master.lagoon.ch.amazee.io:31472
+api: api-lagoon-master.lagoon.ch.amazee.io:80
+
+tasks:
+  post-rollout:
+    - run:
+        name: Run migrations
+        command: php artisan migrate
+        service: cli
+
+environments:
+ prod:
+   routes:
+     - nginx:
+       - "laragoon.amazeelabs.com"
+   cronjobs:
+     - name: artisan schedule
+       schedule: "* * * * *"
+       command: cd /app && php artisan schedule:run
+       service: cli
