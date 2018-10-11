@@ -43,7 +43,6 @@ class SiteAliases
         if (is_null(self::$jwtToken)) {
             $command = sprintf('ssh -p %d -o LogLevel=ERROR -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t lagoon@%s token 2>&1',
               $this->parameters['jwtSSHPort'], $this->parameters['jwtSSHHost']);
-            print($command);
             exec($command, $tokenArray, $returnValue);
             if ($returnValue !== 0) {
                 throw new \Exception("Could not load API JWT Token, error was: '" . implode(",",
@@ -94,12 +93,38 @@ class SiteAliases
         }
 
         curl_close($curl);
-        return json_decode($response);
+        return $this->parseAliases(json_decode($response));
     }
 
-    private function parseAliases($curlResponse)
+    private function parseAliases($aliasObject)
     {
+        $environments = $aliasObject->data->project->environments;
+        // Default server definition, which has no site specific elements
+        $defaults = [
+          'command-specific' => [
+            'sql-sync' => [
+              'no-ordered-dump' => TRUE
+            ],
+          ],
+          'ssh-options' => "-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no",
+        ];
 
+        $sshHost = $this->parameters['jwtSSHHost'];
+        $sshPort = $this->parameters['jwtSSHPort'];
+
+        return array_reduce($environments, function ($carry, $environment) use ($defaults, $sshHost, $sshPort) {
+            $site_name = str_replace('/','-',$environment->name);
+            $site_host = 'localhost';
+
+            $alias = [
+                'remote-host' => "$sshHost",
+                'remote-user' => "$environment->openshiftProjectName",
+                //'root' => "$drupal_path",
+                'ssh-options' => "-o LogLevel=ERROR -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $sshPort",
+              ] + $defaults;
+
+            return $carry + [$site_name => $alias];
+        }, []);
     }
 
     public function loadAliases()
