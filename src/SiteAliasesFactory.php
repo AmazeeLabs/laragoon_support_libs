@@ -67,7 +67,7 @@ class SiteAliasesFactory
                 $unexplodedSSH = !empty($lagoonYml['endpoint']) && is_null($unexplodedSSH) ? $lagoonYml['endpoint'] : $unexplodedSSH;
             }
 
-            if (empty($api) && $lagoonYml['api']) {
+            if (empty($api) && !empty($lagoonYml['api'])) {
                 $api = $lagoonYml['api'];
             }
         }
