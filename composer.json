@@ -3,7 +3,7 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "symfony/yaml": "^4.1"
+        "symfony/yaml": "^3.3"
     },
     "autoload": {
         "psr-4": {"Amazee\\LaragoonSupport\\": "src/"}
