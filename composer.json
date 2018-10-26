@@ -1,5 +1,5 @@
 {
-    "name": "amazee/laragoon_support_libs",
+    "name": "amazee/laragoon-support-libs",
     "description": "Access the lagoon API from PHP",
     "keywords": ["php","laravel","console","devops","deploy","amazee","amazee.io","lagoon","docker"],
     "type": "library",
