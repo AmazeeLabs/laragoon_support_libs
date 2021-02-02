@@ -38,7 +38,7 @@ class SiteAliases
         }
     }
 
-    private function getJWTToken()
+    public function getJWTToken()
     {
         if (is_null(self::$jwtToken)) {
             $command = sprintf('ssh -p %d -o LogLevel=ERROR -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t lagoon@%s token 2>&1',
